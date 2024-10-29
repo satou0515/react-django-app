@@ -1,24 +1,26 @@
-import logo from './logo.svg';
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { UserProvider } from "./context/UserContext";
+import Login from './page/auth/Login';
 import './App.css';
 
 function App() {
+  const [notification, setNotification] = useState('');
+  const [email, setEmail] = useState('');
+
+  useEffect(() => {
+    console.log('App component mounted');
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <UserProvider>
+        <Routes>
+          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path='/login' element={<Login content={notification} setEmail={setEmail} setNotification={setNotification} />} />
+        </Routes>
+      </UserProvider>
+    </Router>
   );
 }
 
