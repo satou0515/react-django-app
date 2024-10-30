@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../context/UserContext";
+import { Container } from "@mui/material";
 
 const Login = (props) => {
   const [password, setPassword] = useState();
@@ -35,55 +36,59 @@ const Login = (props) => {
   }
   return (
     <div className="h-screen overflow-hidden">
-      <div className="h-full flex justify-center">
-        <div className="h-full max-w-[650px] flex flex-col justify-center items-center">
-          <h2 className="text-2xl font-bold text-center">ログイン</h2>
-          <form className="block text-sm font-medium text-gray-700">
-            <div className="mt-2">
-              <label className="block text-sm font-medium text-gray-700">
-                アカウントID（メールアドレス）<span className="text-red-500">　必須</span>
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                value={email}
-                onChange={handleEmailChange}
-                required
-                className="w-full p-3 mt-1 border-2 border-gray-500 rounded-lg foucus:outline-none foucus:border-blue-300"
-              />
+      <Container className="h-full flex flex-col justify-center">
+        <div className="h-full flex justify-center">
+          <div className="h-full max-w-[850px] flex-grow mx-24 px-24">
+            <div className="h-full flex flex-col justify-center mx-24">
+              <h2 className="text-2xl font-bold text-center">ログイン</h2>
+              <form className="w-full space-y-6 py-4">
+                <div className="mt-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    アカウント名／メールアドレス<span className="pl-4 text-red-500">必須</span>
+                  </label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={email}
+                    onChange={handleEmailChange}
+                    required
+                    className="w-full p-3 mt-1 border-2 border-gray-500 rounded-lg foucus:outline-none foucus:border-blue-300"
+                  />
+                </div>
+                <div className="mt-2">
+                  <label className="block text-sm font-midium text-gray-700">
+                    パスワード<span className="pl-4 text-red-500">必須</span>
+                  </label>
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={handlePasswordChange}
+                    required
+                    className="w-full p-3 mt-1 border-2 border-gray-500 rounded-lg foucus:outline-none foucus:border-blue-300"
+                  />
+                </div>
+                <div className="mt-8">
+                  <button
+                    type="submit"
+                    onClick={handleSubmit}
+                    className="w-full py-3 text-white bg-blue-500 rounded-full hover:bg-blue-700"
+                  >
+                    ログイン
+                  </button>
+                </div>
+              </form>
+              <div className="mt-4 text-center">
+                <a href="/forget-pass" className="text-sm text-blue-500 under-line">パスワードを忘れた方はこちら</a>
+                <br />
+                <a href="/register" className="text-sm text-blue-500 under-line">アカウントをお持ちでない方はこちら</a>
+              </div>
             </div>
-            <div className="mt-2">
-              <label className="block text-sm font-midium text-gray-700">
-                パスワード<span className="text-red-500">　必須</span>
-              </label>
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={handlePasswordChange}
-                required
-                className="w-full p-3 mt-1 border-2 border-gray-500 rounded-lg foucus:outline-none foucus:border-blue-300"
-              />
-            </div>
-            <div className="mt-8">
-              <button
-                type="submit"
-                onClick={handleSubmit}
-                className="w-full py-3 text-white bg-blue-500 rounded-full hover:bg-blue-700"
-              >
-                ログイン
-              </button>
-            </div>
-          </form>
+          </div>
         </div>
-      </div>
-      <div className="text-center">
-        <a href="/forget-pass" className="text-sm text-blue-500 under-line">パスワードを忘れた方はこちら</a>
-        <br />
-        <a href="/register" className="text-sm text-blue-500 under-line">アカウントをお持ちでない方はこちら</a>
-      </div>
+      </Container>
     </div>
   );
 };
