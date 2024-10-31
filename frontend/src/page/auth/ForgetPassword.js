@@ -31,40 +31,40 @@ const ForgetPassword = () => {
           <div className="h-full max-w-[850px] flex-grow mx-24 px-24">
             <div className="h-full flex flex-col justify-center mx-24">
               <h2 className="text-2xl font-bold text-center">パスワード再設定</h2>
-              <form className="w-full space-y-6 py-4" onSubmit={handleSubmit} noValidate>
+              <form className="w-full space-y-3 py-4 text-xs" onSubmit={handleSubmit} noValidate>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">メールアドレス</label>
+                  <label className="block font-medium text-gray-700">メールアドレス</label>
                   <input
                     id='email'
                     name='email'
                     type='email'
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full p-3 mt-1 border-2 border-gray-500 rounded-lg foucus:outline-none foucus:border-blue-300"
+                    className="w-full p-2 mt-1 border-2 border-gray-500 rounded-lg foucus:outline-none foucus:border-blue-300"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">新しいパスワード<span className='pl-4 text-red-500'>必須</span></label>
+                  <label className="block font-medium text-gray-700">新しいパスワード<span className='pl-4 text-red-500'>必須</span></label>
                   <input
                     id='password'
                     name='password'
                     type='password'
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full p-3 mt-1 border-2 border-gray-500 rounded-lg foucus:outline-none foucus:border-blue-300"
+                    className="w-full p-2 mt-1 border-2 border-gray-500 rounded-lg foucus:outline-none foucus:border-blue-300"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">新しいパスワード（確認）<span className='pl-4 text-red-500'>必須</span></label>
+                  <label className="block font-medium text-gray-700">新しいパスワード（確認）<span className='pl-4 text-red-500'>必須</span></label>
                   <input
                     id='validPassword'
                     name='validPassword'
                     type='validPassword'
                     value={validPassword}
                     onChange={(e) => setValidPassword(e.target.value)}
-                    className="w-full p-3 mt-1 border-2 border-gray-500 rounded-lg foucus:outline-none foucus:border-blue-300"
+                    className="w-full p-2 mt-1 border-2 border-gray-500 rounded-lg foucus:outline-none foucus:border-blue-300"
                     required
                   />
                 </div>
