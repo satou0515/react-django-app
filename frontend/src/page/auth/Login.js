@@ -10,8 +10,9 @@ const Login = (props) => {
   const [showPassword, setShowPassword] = useState();
   const { login } = useContext(UserContext);
 
-  // useEffect(() => {
-  // }, []);
+  useEffect(() => {
+    console.log('Login Page');
+  }, []);
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);

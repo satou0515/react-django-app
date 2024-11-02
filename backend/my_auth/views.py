@@ -1,10 +1,11 @@
+import os
 import firebase_admin
 from firebase_admin import credentials, auth
 from django.views import View
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
-from rest_framework import serializers, status
+from rest_framework import serializers, status, permissions
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
@@ -13,7 +14,7 @@ import logging
 from my_auth.serializers import UserInformationSerializer
 from my_auth.models import UserInformation
 
-class FirebaseService:
+class FirebaseService(viewsets.ModelViewSet):
   def __init__(self):
     # Service Accountのキーファイルのパスを指定
     cred = credentials.Certificate('path/to/serviceAccountKey.json')
@@ -36,6 +37,14 @@ class FirebaseService:
       users.append(doc.to_dict())
 
     return render(request, 'user_list.html', {'users': users})
+
+class UserInformatoinViewSet(viewsets.ModelViewSet):
+  queryset = UserInformation.objects.all().order_by('firebase_uid')
+  serializer_class = UserInformationSerializer
+
+  def get_object(self):
+    firebase_uid = self.kwargs.get('pk') # URLからfirebase_uidを取得
+    return get_object_or_404(UserInformation, firebase_uid=firebase_uid)
 
 class UserListView(View):
   def get(self, request):
@@ -66,11 +75,14 @@ class UserLoginView(APIView):
       return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 # ユーザー登録
-class UserSignUpView(viewsets.ModelViewSet):
+class UserSignUpView(APIView):
+  permission_classes = (permissions.AllowAny,)
   serializer_class = UserInformationSerializer
 
-  def post(self, serializer):
+  def post(self, request):
+    serializer = UserInformationSerializer(data=request.data)
     if serializer.is_valid():
+      print('>>>>> auth create')
       # firebase　Authenticationでユーザーの作成
       try:
         user = auth.create_user(
@@ -80,13 +92,13 @@ class UserSignUpView(viewsets.ModelViewSet):
       except auth.AuthError as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
       
+      print('>>>>> UserInformation create')
       # カスタムユーザーモデルの作成
       UserInformation.objects.create(
         firebase_uid=user.uid,
-        user_id=serializer.validated_data['user_id'],
         account_name=serializer.validated_data['account_name'],
         birth_date=serializer.validated_data['birth_date'],
-        sex=serializer.validated_data['sex'],
+        gender=serializer.validated_data['gender'],
         icon_image=serializer.validated_data['icon_image']
       )
       return Response({'message': '登録しました。'}, status=status.HTTP_201_CREATED)

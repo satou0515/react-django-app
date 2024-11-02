@@ -10,8 +10,8 @@ const Register = (props) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [validPassword, setValidPassword] = useState('');
-  const [birthDate, setbirth_date] = useState('');
-  const [sex, setSex] = useState('');
+  const [birthDate, setBirthDate] = useState('');
+  const [gender, setGender] = useState('');
 
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
@@ -32,29 +32,34 @@ const Register = (props) => {
     }
     if(!emailInput.checkVisibility()) {
       console.log('Error: ', emailInput.validationMessage);
-    }else {
       return;
     }
 
     // FormDataオブジェクトを作成して画像ファイルと他のデータを追加
-    const formData = new FormData();
-    formData.append('icon_image', avatar); // 画像ファイルを追加
-    formData.append('name', name);
-    formData.append('email', email);
-    formData.append('password', password);
-    formData.append('birth_date', birthDate);
-    formData.append('sex', sex);
-    try {
-      const response = await axios.post(`${apiUrl}/api/authentication/signUp/`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+    const formData = {
+      icon_image: avatar,
+      account_name: name,
+      email: email,
+      password: password,
+      birth_date: birthDate,
+      gender: gender
+    };
+
+    const token = localStorage.getItem('token');
+    axios.post(`${apiUrl}/api/authentication/signUp/`, formData, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
       console.log(response);
       console.log('成功！');
-    }catch(error) {
+      navigator('/login');
+    })
+    .catch((error) => {
       console.log('Error: ', error);
-    }
+    });
   }
 
   return (
@@ -112,7 +117,7 @@ const Register = (props) => {
                   />
                 </div>
                 <div>
-                  <label className="block font-medium text-gray-700">新しいパスワード<span className='pl-4 text-red-500'>必須</span></label>
+                  <label className="block font-medium text-gray-700">パスワード<span className='pl-4 text-red-500'>必須</span></label>
                   <input
                     id='password'
                     name='password'
@@ -124,7 +129,7 @@ const Register = (props) => {
                   />
                 </div>
                 <div>
-                  <label className="block font-medium text-gray-700">新しいパスワード（確認）<span className='pl-4 text-red-500'>必須</span></label>
+                  <label className="block font-medium text-gray-700">パスワード（確認）<span className='pl-4 text-red-500'>必須</span></label>
                   <input
                     id='validPassword'
                     name='validPassword'
@@ -142,27 +147,31 @@ const Register = (props) => {
                     name='birth_date'
                     type='text'
                     value={birthDate}
-                    onChange={(e) => setbirth_date(e.target.value)}
+                    onChange={(e) => setBirthDate(e.target.value)}
                     className="w-full p-2 mt-1 border-2 border-gray-500 rounded-lg foucus:outline-none foucus:border-blue-300"
                     required
                   />
                 </div>
                 <div>
                   <label className="block font-medium text-gray-700">性別</label>
-                  <input
-                    id='sex'
-                    name='sex'
+                  <select
+                    id='gender'
+                    name='gender'
                     type='text'
-                    value={sex}
-                    onChange={(e) => setSex(e.target.value)}
+                    value={gender}
+                    onChange={(e) => setGender(e.target.value)}
                     className="w-full p-2 mt-1 border-2 border-gray-500 rounded-lg foucus:outline-none foucus:border-blue-300"
                     required
-                  />
+                  >
+                    <option value="" disabled>選択してください</option>
+                    <option value="male">男性</option>
+                    <option value="female">女性</option>
+                    <option value="other">その他</option>
+                  </select>
                 </div>
                 <div>
                   <button
                     type="submit"
-                    onClick={handleSubmit}
                     className="w-full mt-4 py-3 font-bold text-sm text-white bg-blue-500 rounded-full hover:bg-blue-700"
                   >
                     アカウントを作成

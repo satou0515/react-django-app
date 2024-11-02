@@ -1,14 +1,11 @@
-from django.conf import settings
 from django.urls import path, include
 from rest_framework import routers
-from my_auth.views import UserLoginView, UserSignUpView
+from my_auth.views import UserInformatoinViewSet
 
 router = routers.DefaultRouter()
-router.register('users', UserSignUpView, basename='user')  # ユーザー登録用
+router.register(r'users', UserInformatoinViewSet)
 
 urlpatterns = [
-  path('', include(router.urls)),
-  path('login/', UserLoginView.as_view()),
-]
-
+  path('authentication/', include('my_auth.urls')),
+] + router.urls
 app_name = 'api'

@@ -42,7 +42,6 @@ export const UserProvider = ({ children }) => {
   }, [navigate]);
 
   const login = (email, password) => {
-
     // 認証処理成功
     sessionStorage.setItem('isAuthenticated', 'true');
 
@@ -60,7 +59,7 @@ export const UserProvider = ({ children }) => {
       .catch(error => {
         console.log("Error: ", error);
         // setError('');
-      })
+      });
   };
 
   const logout = () => {

@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 import environ
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,8 +29,13 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = []
+# 本番環境では具体的なホストを指定
+ALLOWED_HOSTS = ['*']
 
+CORS_ALLOWED_ORIGINS = [
+  'http://127.0.0.1:3000',  # フロントエンド
+  'http://127.0.0.1:8000',  # バックエンド
+]
 
 # Application definition
 DJANGO_APPS = [
@@ -42,15 +48,19 @@ DJANGO_APPS = [
 ]
 THIRD_PARTY_APPS = [
   'rest_framework',
+  'corsheaders',
 ]
 LOCAL_APPS = [
   "my_auth",
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
+CORS_ALLOW_ALL_ORIGINS = True
+
 AUTH_USER_MODEL = 'my_auth.UserInformation'
 
 MIDDLEWARE = [
+  'corsheaders.middleware.CorsMiddleware',
   'django.middleware.security.SecurityMiddleware',
   'django.contrib.sessions.middleware.SessionMiddleware',
   'django.middleware.common.CommonMiddleware',
@@ -59,8 +69,6 @@ MIDDLEWARE = [
   'django.contrib.messages.middleware.MessageMiddleware',
   'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
-ROOT_URLCONF = 'core.urls'
 
 TEMPLATES = [
   {
@@ -78,18 +86,19 @@ TEMPLATES = [
   },
 ]
 
+ROOT_URLCONF = 'core.urls'
 WSGI_APPLICATION = 'core.wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-# DATABASES = {
-#     'default': env.db(),
-# }
-# Firebaseの設定
-FIREBASE_SERVICE_ACCOUNT = os.environ.get('FIREBASE_SERVICE_ACCOUNT')
-CORS_ORIGIN_WHITELIST = env.list('CORS_ORIGIN_WHITELIST')
+DATABASES = {
+    'default': {
+      'ENGINE': 'django.db.backends.sqlite3',
+      'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -132,3 +141,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Firebase Firestore Settings
+FIREBASE_ADMIN_CERT = config('FIREBASE_ADMIN_CERT')
