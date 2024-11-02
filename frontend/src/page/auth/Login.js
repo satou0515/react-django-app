@@ -23,7 +23,7 @@ const Login = (props) => {
   }
 
   const handlePasswordChange = (e) => {
-    setEmail(e.target.value);
+    setPassword(e.target.value);
   }
 
   // const handleTogglePassword = () => {
@@ -44,7 +44,7 @@ const Login = (props) => {
               <form className="w-full space-y-3 py-4 text-xs">
                 <div className="mt-2">
                   <label className="block font-medium text-gray-700">
-                    アカウント名／メールアドレス<span className="pl-4 text-red-500">必須</span>
+                    メールアドレス<span className="pl-4 text-red-500">必須</span>
                   </label>
                   <input
                     id="email"
