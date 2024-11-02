@@ -10,7 +10,7 @@ const Register = (props) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [validPassword, setValidPassword] = useState('');
-  const [birthday, setBirthday] = useState('');
+  const [birthDate, setbirth_date] = useState('');
   const [sex, setSex] = useState('');
 
   const handleAvatarChange = (e) => {
@@ -42,10 +42,10 @@ const Register = (props) => {
     formData.append('name', name);
     formData.append('email', email);
     formData.append('password', password);
-    formData.append('birthday', birthday);
+    formData.append('birth_date', birthDate);
     formData.append('sex', sex);
     try {
-      const response = await axios.post(`${apiUrl}/api/authentication/forget-password/`, formData, {
+      const response = await axios.post(`${apiUrl}/api/authentication/signUp/`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -138,11 +138,11 @@ const Register = (props) => {
                 <div>
                   <label className="block font-medium text-gray-700">生年月日</label>
                   <input
-                    id='birthday'
-                    name='birthday'
+                    id='birth_date'
+                    name='birth_date'
                     type='text'
-                    value={birthday}
-                    onChange={(e) => setBirthday(e.target.value)}
+                    value={birthDate}
+                    onChange={(e) => setbirth_date(e.target.value)}
                     className="w-full p-2 mt-1 border-2 border-gray-500 rounded-lg foucus:outline-none foucus:border-blue-300"
                     required
                   />

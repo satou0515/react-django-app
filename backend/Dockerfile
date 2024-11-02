@@ -20,5 +20,3 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY . /code/
 
 RUN pip install firebase-admin
-RUN pip install django-environ
-RUN pip install dj-database-url
