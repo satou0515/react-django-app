@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import { Container } from "@mui/material";
+import axios from 'axios';
 
 const Register = (props) => {
+  const apiUrl = process.env.REACT_APP_API_URL;
   const [avatar, setAvatar] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(''); // プレビュー用
   const [name, setName] = useState('');
@@ -36,18 +38,19 @@ const Register = (props) => {
 
     // FormDataオブジェクトを作成して画像ファイルと他のデータを追加
     const formData = new FormData();
-    formData.append('avatar', avatar); // 画像ファイルを追加
+    formData.append('icon_image', avatar); // 画像ファイルを追加
     formData.append('name', name);
     formData.append('email', email);
     formData.append('password', password);
     formData.append('birthday', birthday);
     formData.append('sex', sex);
     try {
-      // const response = await axios.post(`${apiUrl}/api/authentication/forget-password/`, formData, {
-      //   headers: {
-      //     'Content-Type': 'multipart/form-data',
-      //   },
-      // });
+      const response = await axios.post(`${apiUrl}/api/authentication/forget-password/`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log(response);
       console.log('成功！');
     }catch(error) {
       console.log('Error: ', error);
