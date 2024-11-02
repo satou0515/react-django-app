@@ -20,3 +20,4 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY . /code/
 
 RUN pip install firebase-admin
+RUN pip install django-cors-headers
