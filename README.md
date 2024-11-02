@@ -1,9 +1,5 @@
 # ユーザー登録機能と投稿機能
 
-<<<<<<< Updated upstream
-react-django-appディレクトリで以下を実行
-```docker compose up --build```
-=======
 ## 環境設定
 * react-django-appディレクトリで以下を実行
 `npm install firebase-tools`
@@ -17,4 +13,3 @@ react-django-appディレクトリで以下を実行
 
 ### バックエンド側
 `docker compose up --build`
->>>>>>> Stashed changes
