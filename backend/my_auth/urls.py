@@ -1,12 +1,9 @@
-from django.urls import path
-from .views import (
-  UserLoginView,
-  UserSignUpView,
-  GetUserRole,
-)
+from my_auth.views import UserInformatoinViewSet
+from rest_framework.routers import DefaultRouter
 
-urlpatterns = [
-    path('login/', view=UserLoginView.as_view(), name='login'),
-    path('signUp/', view=UserSignUpView.as_view(), name='signUp'),
-    path('userRole/', view=GetUserRole.as_view(), name='userRole'),
-]
+router = DefaultRouter()
+router.register(r'my_auth', UserInformatoinViewSet, basename='todo')
+
+urlpatterns = router.urls
+
+app_name = 'my_auth'

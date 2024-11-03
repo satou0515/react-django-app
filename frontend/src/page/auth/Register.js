@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { Container } from "@mui/material";
 import axios from 'axios';
+import { MdOutlineVisibility } from "react-icons/md";
+import { MdOutlineVisibilityOff } from "react-icons/md";
 
 const Register = (props) => {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -9,7 +11,8 @@ const Register = (props) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [validPassword, setValidPassword] = useState('');
+  const [validPassword, setValidPassword] = useState(true);
+  const [showPassword, setShowPassword] = useState();
   const [birthDate, setBirthDate] = useState('');
   const [gender, setGender] = useState('');
 
@@ -21,32 +24,42 @@ const Register = (props) => {
     }
   };
 
+  const handleTogglePassword = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
+  }
+
+  const handlePasswordChange = (e) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+    setValidPassword(validatePassword(newPassword));
+  }
+  const validatePassword = (pass) => {
+    const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}$/;
+    return pattern.test(pass);
+  }
+
   const handleSubmit = async(e) => {
     e.preventDefault();
 
+    console.log('icon: ', avatar);
     const emailInput = document.getElementById('email');
     // バリデーションチェック
-    if (password !== validPassword) {
-      console.log('Error: Passwords do not match');
-      return;
-    }
     if(!emailInput.checkVisibility()) {
       console.log('Error: ', emailInput.validationMessage);
       return;
     }
 
     // FormDataオブジェクトを作成して画像ファイルと他のデータを追加
-    const formData = {
-      icon_image: avatar,
-      account_name: name,
-      email: email,
-      password: password,
-      birth_date: birthDate,
-      gender: gender
-    };
+    const formData = new FormData();
+    formData.append('icon_image', avatar);
+    formData.append('account_name', name);
+    formData.append('email', email);
+    formData.append('password', password);
+    formData.append('birth_date', birthDate);
+    formData.append('gender', gender);
 
     const token = localStorage.getItem('token');
-    axios.post(`${apiUrl}/api/authentication/signUp/`, formData, {
+    axios.post(`${apiUrl}/api/authentication/my_auth/`, formData, {
       headers: {
         Accept: 'application/json',
         Authorization: `Bearer ${token}`,
@@ -99,6 +112,7 @@ const Register = (props) => {
                     name='name'
                     type='text'
                     value={name}
+                    placeholder='ponz'
                     onChange={(e) => setName(e.target.value)}
                     className="w-full p-2 mt-1 border-2 border-gray-500 rounded-lg foucus:outline-none foucus:border-blue-300"
                     required
@@ -110,42 +124,49 @@ const Register = (props) => {
                     id='email'
                     name='email'
                     type='email'
+                    placeholder='sample@abc.com'
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full p-2 mt-1 border-2 border-gray-500 rounded-lg foucus:outline-none foucus:border-blue-300"
                     required
                   />
                 </div>
-                <div>
+                <div style={{ width: '100%', position: 'relative' }}>
                   <label className="block font-medium text-gray-700">パスワード<span className='pl-4 text-red-500'>必須</span></label>
                   <input
                     id='password'
                     name='password'
-                    type='password'
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder='@qweQWE123'
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full p-2 mt-1 border-2 border-gray-500 rounded-lg foucus:outline-none foucus:border-blue-300"
+                    onChange={handlePasswordChange}
+                    className={`w-full p-2 mt-1 border-2 rounded-lg foucus:outline-none foucus:border-blue-300 ${validPassword ? 'border-gray-500' : "border-red-500"}`}
                     required
                   />
+                  <button
+                    type="button"
+                    onClick={handleTogglePassword}
+                    style={{
+                      position: 'absolute',
+                      right: '16px',
+                      top: '70%',
+                      transform: 'translateY(-50%)',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {showPassword ? <MdOutlineVisibility size={20} /> : <MdOutlineVisibilityOff size={20} />}
+                  </button>
                 </div>
-                <div>
-                  <label className="block font-medium text-gray-700">パスワード（確認）<span className='pl-4 text-red-500'>必須</span></label>
-                  <input
-                    id='validPassword'
-                    name='validPassword'
-                    type='validPassword'
-                    value={validPassword}
-                    onChange={(e) => setValidPassword(e.target.value)}
-                    className="w-full p-2 mt-1 border-2 border-gray-500 rounded-lg foucus:outline-none foucus:border-blue-300"
-                    required
-                  />
-                </div>
+                {!validPassword && password.length>0 ? <span className='text-red-500'>小文字1文字、大文字1文字、数字1文字、記号1文字を含む8文字以上のパスワードを入力してください</span> : ''}
                 <div>
                   <label className="block font-medium text-gray-700">生年月日</label>
                   <input
                     id='birth_date'
                     name='birth_date'
                     type='text'
+                    placeholder='2000-01-01'
                     value={birthDate}
                     onChange={(e) => setBirthDate(e.target.value)}
                     className="w-full p-2 mt-1 border-2 border-gray-500 rounded-lg foucus:outline-none foucus:border-blue-300"

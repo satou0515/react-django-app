@@ -9,59 +9,66 @@ from rest_framework import serializers, status, permissions
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-import logging
+
+from my_auth.firestore import FirebaseClient
 
 from my_auth.serializers import UserInformationSerializer
-from my_auth.models import UserInformation
 
-class FirebaseService(viewsets.ModelViewSet):
-  def __init__(self):
-    # Service Accountのキーファイルのパスを指定
-    cred = credentials.Certificate('path/to/serviceAccountKey.json')
+class UserInformatoinViewSet(viewsets.ViewSet):
+  firebase_client = FirebaseClient()
 
-    try:
-      # Firebaseアプリを初期化
-      firebase_admin.initialize_app(cred)
-      # Firestoreに接続
-      self.db = firebase_admin.firestore()
-      logging.info('Firebaseに接続しました。')
-    except Exception as e:
-      logging.error(f'Firebaseへの接続に失敗しました。')
+  def create(self, request, *args, **kwargs):
+    serializer = UserInformationSerializer(data=request.data)
+    if not serializer.is_valid():
+      print('>>>>>>>>', serializer.errors)
+      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    serializer.is_valid(raise_exception=True)
 
-  def get_users(self, request):
-    # コレクションからドキュメントを取得する
-    docs = self.db.collection('users').stream()
-    # 取得したドキュメントをリストに格納
-    users = []
-    for doc in docs:
-      users.append(doc.to_dict())
+    # firestoreに保存
+    self.firebase_client.create(serializer.data)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+  
+  # すべてのデータを取得
+  def list(self, request):
+    users = self.firebase_client.all()
+    serializer = UserInformationSerializer(users)
+    return Response(serializer.data)
 
-    return render(request, 'user_list.html', {'users': users})
+  # 特定のデータを取得
+  def retrieve(self, request, pk=None):
+    user = self.firebase_client.get_by_id(pk)
 
-class UserInformatoinViewSet(viewsets.ModelViewSet):
-  queryset = UserInformation.objects.all().order_by('firebase_uid')
-  serializer_class = UserInformationSerializer
+    if user:
+      serializer = UserInformationSerializer(user)
+      return Response(serializer.data)
+    
+    return Response({"error": "アカウントが見つかりません。"}, status=status.HTTP_404_NOT_FOUND)
 
-  def get_object(self):
-    firebase_uid = self.kwargs.get('pk') # URLからfirebase_uidを取得
-    return get_object_or_404(UserInformation, firebase_uid=firebase_uid)
+  # データの削除
+  def destroy(self, request, *args, **kwargs):
+    pk = kwargs.get('uid')
+    self.firebase_client.delete_by_id(pk)
+    return Response({"status": "削除しました。"}, status=status.HTTP_204_NO_CONTENT)
 
-class UserListView(View):
-  def get(self, request):
-    try:
-      firebase_service = FirebaseService()
-      users = firebase_service.get_users()
-      logging.info(users)
-    except Exception as e:
-      return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+  # データの更新
+  def update(self, request, *args, **kwargs):
+    pk = kwargs.get('uid')
+    serializer = UserInformationSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+
+    self.firebase_client.update(pk, serializer.data)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 class GetUserRole(APIView):
+  firebase_client = FirebaseClient()
   def get(self, request):
     user = request.user
     return Response({'data': user}, status=status.HTTP_200_OK)
 
-# ログイン
+# # ログイン
 class UserLoginView(APIView):
+  firebase_client = FirebaseClient()
   def post(self, request):
     email = request.data.get('email')
     password = request.data.get('password')
@@ -76,13 +83,13 @@ class UserLoginView(APIView):
 
 # ユーザー登録
 class UserSignUpView(APIView):
+  firebase_client = FirebaseClient()
   permission_classes = (permissions.AllowAny,)
   serializer_class = UserInformationSerializer
 
   def post(self, request):
     serializer = UserInformationSerializer(data=request.data)
     if serializer.is_valid():
-      print('>>>>> auth create')
       # firebase　Authenticationでユーザーの作成
       try:
         user = auth.create_user(
@@ -94,7 +101,7 @@ class UserSignUpView(APIView):
       
       print('>>>>> UserInformation create')
       # カスタムユーザーモデルの作成
-      UserInformation.objects.create(
+      UserInformationSerializer.objects.create(
         firebase_uid=user.uid,
         account_name=serializer.validated_data['account_name'],
         birth_date=serializer.validated_data['birth_date'],
