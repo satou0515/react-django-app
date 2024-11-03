@@ -17,7 +17,7 @@ class FirebaseClient:
     self._db = firestore.client()
     self._collection = self._db.collection(u'user-information')
 
-  # user-informationコレクションにデータを保存
+  # user-informationコレクションにデータを作成
   def create(self, data):
     doc_ref = self._collection.document()
     doc_ref.set(data)
