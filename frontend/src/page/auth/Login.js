@@ -1,21 +1,18 @@
 import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../context/UserContext";
 import { Container } from "@mui/material";
+import { MdOutlineVisibility } from "react-icons/md";
+import { MdOutlineVisibilityOff } from "react-icons/md";
 
 const Login = (props) => {
   const [password, setPassword] = useState();
   const [email, setEmail] = useState();
   const [showPassword, setShowPassword] = useState();
-  // const [error, setError] = useState('');
-  const [content, setContent] = useState('');
   const { login } = useContext(UserContext);
 
   useEffect(() => {
-    if(props.content) {
-      setContent(props.content);
-      props.setNotification('');
-    }
-  }, [props.content]);
+    console.log('Login Page');
+  }, []);
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -23,12 +20,12 @@ const Login = (props) => {
   }
 
   const handlePasswordChange = (e) => {
-    setEmail(e.target.value);
+    setPassword(e.target.value);
   }
 
-  // const handleTogglePassword = () => {
-  //   setShowPassword((prevShowPassword) => !prevShowPassword);
-  // }
+  const handleTogglePassword = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -44,7 +41,7 @@ const Login = (props) => {
               <form className="w-full space-y-3 py-4 text-xs">
                 <div className="mt-2">
                   <label className="block font-medium text-gray-700">
-                    アカウント名／メールアドレス<span className="pl-4 text-red-500">必須</span>
+                    メールアドレス<span className="pl-4 text-red-500">必須</span>
                   </label>
                   <input
                     id="email"
@@ -69,6 +66,21 @@ const Login = (props) => {
                     required
                     className="w-full p-2 mt-1 border-2 border-gray-500 rounded-lg foucus:outline-none foucus:border-blue-300"
                   />
+                  <button
+                    type="button"
+                    onClick={handleTogglePassword}
+                    style={{
+                      position: 'absolute',
+                      right: '10px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {showPassword ? <MdOutlineVisibility /> : <MdOutlineVisibilityOff />}
+                  </button>
                 </div>
                 <div>
                   <button

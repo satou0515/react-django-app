@@ -17,54 +17,49 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
+    const fetchUser = () => {
+      const token = localStorage.getItem('token');
+      if(token) {
+        axios.get('/api/authentication/user-role', {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(response => {
+          setUser(response.data);
+        })
+        .catch(error => {
+          console.log('Error: ', error);
+          localStorage.removeItem('token');
+          navigate('/login');
+        })
+        .finally(() => {
+          setLoading(false);
+        })
+      }else {
+        setLoading(false);
+      }
+    };
     fetchUser();
   }, [navigate]);
 
-  const fetchUser = () => {
-    const token = localStorage.getItem('token');
-    if(token) {
-      // Axiosのリクエストを実行
-      // axios.get('api/authentication/user-role/', {
-      //   headers: { Authorization: `Bearer ${token}` }
-      // })
-      // .then(response => {
-      //   setUser(response.data);
-      // })
-      // .catch(error => {
-      //   localStorage.removeItem('token');
-      //   navigate('/login');
-      // })
-      // .finaly(() => {
-      //   setLoading(false);
-      // });
-    }else {
-      setLoading(false);
-    }
-  };
-
   const login = (email, password) => {
-    // let remember = false;
-
     // 認証処理成功
     sessionStorage.setItem('isAuthenticated', 'true');
 
-    // setError('');
-    // axios.post('/api/authentication/login/', { email, password })
-    //   .then(response => {
-    //     const { token } = response.data.result;
-    //     localStorage.setItem('token', token);
-    //     // remember = response.data.result.user.remember;
-    //     return axios.get('/api/authentication/user-role/', {
-    //       headers: { Authorization: `Bearer ${token}` }
-    //     });
-    //   })
-    //   .then(response => {
-    //     setUser(response.data);
-    //   })
-    //   .catch(error => {
-    //     console.log("Error: ", error);
-    //     // setError('');
-    //   })
+    axios.post('/api/authentication/login/', { email, password })
+      .then(response => {
+        const { token } = response.data.result;
+        localStorage.setItem('token', token);
+        return axios.get('/api/authentication/userRole/', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      })
+      .then(response => {
+        setUser(response.data);
+      })
+      .catch(error => {
+        console.log("Error: ", error);
+        // setError('');
+      });
   };
 
   const logout = () => {

@@ -5,6 +5,9 @@ import Login from './page/auth/Login';
 import './App.css';
 import ForgetPassword from './page/auth/ForgetPassword';
 import Register from './page/auth/Register';
+import initializeApp from './init';
+
+initializeApp();
 
 function App() {
   const [notification, setNotification] = useState('');
