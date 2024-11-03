@@ -1,12 +1,5 @@
 # ユーザー登録機能と投稿機能
 
-<<<<<<< HEAD
-frontendディレクトリで以下を実行
-```npm install```
-
-react-django-appディレクトリで以下を実行
-```docker compose up --build```
-=======
 ## バージョン
 * Python: 3.11
 * Django: 4.2
@@ -27,4 +20,3 @@ react-django-appディレクトリで以下を実行
 
 ## 実行
 `docker compose up --build`
->>>>>>> stash@{0}
