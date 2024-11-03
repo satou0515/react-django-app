@@ -18,5 +18,5 @@
 * firebaseのデプロイ
 `firebase deploy`
 
-### バックエンド側
+## 実行
 `docker compose up --build`
