@@ -1,13 +1,9 @@
 from rest_framework import serializers
-from my_auth.models import UserInformation
+from my_auth.constants import GENDER_CHOICES
 
-class UserInformationSerializer(serializers.ModelSerializer):
-  class Meta:
-    model = UserInformation
-    fields = ['firebase_uid', 'account_name', 'birth_date', 'gender', 'icon_image']
-
-  def create(self, validated_data):
-    user = UserInformation(**validated_data)
-    user.set_password(validated_data['password'])  # パスワードをハッシュ化
-    user.save()
-    return user
+class UserInformationSerializer(serializers.Serializer):
+  firebase_uid = serializers.CharField(max_length=255, read_only=True)
+  account_name = serializers.CharField(max_length=50)
+  birth_date = serializers.DateField()
+  gender = serializers.ChoiceField(choices=GENDER_CHOICES)
+  icon_image = serializers.ImageField()
