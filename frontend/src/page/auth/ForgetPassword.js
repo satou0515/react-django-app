@@ -31,7 +31,7 @@ const ForgetPassword = () => {
           <div className="h-full max-w-[850px] flex-grow mx-24 px-24">
             <div className="h-full flex flex-col justify-center mx-24">
               <h2 className="text-2xl font-bold text-center">パスワード再設定</h2>
-              <form className="w-full space-y-3 py-4 text-xs" onSubmit={handleSubmit} noValidate>
+              <form className="w-full space-y-3 py-4 text-sm" onSubmit={handleSubmit} noValidate>
                 <div>
                   <label className="block font-medium text-gray-700">メールアドレス</label>
                   <input

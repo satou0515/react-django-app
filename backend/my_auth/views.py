@@ -18,7 +18,12 @@ class UserInformatoinViewSet(viewsets.ViewSet):
   firebase_client = FirebaseClient()
 
   def create(self, request, *args, **kwargs):
-    serializer = UserInformationSerializer(data=request.data)
+    data=request.data
+    if 'icon_image' not in data:
+      data['icon_image'] = None
+    if 'birth_date' not in data:
+      data['birth_date'] = None
+    serializer = UserInformationSerializer(data=data)
     if not serializer.is_valid():
       print('>>>>>>>>', serializer.errors)
       return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
