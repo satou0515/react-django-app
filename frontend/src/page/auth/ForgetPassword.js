@@ -1,6 +1,7 @@
 // import axios from 'axios';
 import React, { useState } from 'react'
-import { Container } from "@mui/material";
+import Header from '../../component/common/header';
+import Container from "../../component/dashboard/Container";
 
 const ForgetPassword = () => {
   const [email, setEmail] = useState('');
@@ -26,7 +27,8 @@ const ForgetPassword = () => {
 
   return (
     <div className="h-screen overflow-hidden">
-      <Container className="h-full flex flex-col justify-center">
+      <Header />
+      <Container style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <div className="h-full flex justify-center">
           <div className="h-full max-w-[850px] flex-grow mx-24 px-24">
             <div className="h-full flex flex-col justify-center mx-24">
@@ -44,7 +46,7 @@ const ForgetPassword = () => {
                     required
                   />
                 </div>
-                <div>
+                <div style={{ width: "100%", position: "relative" }}>
                   <label className="block font-medium text-gray-700">新しいパスワード<span className='pl-4 text-red-500'>必須</span></label>
                   <input
                     id='password'
@@ -56,7 +58,7 @@ const ForgetPassword = () => {
                     required
                   />
                 </div>
-                <div>
+                <div style={{ width: "100%", position: "relative" }}>
                   <label className="block font-medium text-gray-700">新しいパスワード（確認）<span className='pl-4 text-red-500'>必須</span></label>
                   <input
                     id='validPassword'

@@ -11,6 +11,7 @@ import "./App.css";
 import ForgetPassword from "./page/auth/ForgetPassword";
 import SignUp from "./page/auth/SignUp";
 import initializeApp from "./init";
+import DashboardRouter from "./page/dashboard/DashboardRouter";
 
 initializeApp();
 
@@ -47,6 +48,7 @@ function App() {
             }
           />
           <Route path="/forget-pass" element={<ForgetPassword />} />
+          <Route path="/home" element={<DashboardRouter />} />
         </Routes>
       </AuthProvider>
     </Router>

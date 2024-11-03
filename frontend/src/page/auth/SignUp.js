@@ -1,9 +1,13 @@
 import React, { useState } from "react";
-import { Container } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { MdOutlineVisibility } from "react-icons/md";
 import { MdOutlineVisibilityOff } from "react-icons/md";
+
+import { auth } from "../../firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import Header from "../../component/common/header";
+import Container from "../../component/dashboard/Container";
 
 const SignUp = (props) => {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -74,6 +78,7 @@ const SignUp = (props) => {
       })
       .then((response) => {
         console.log(response.data);
+        createUserWithEmailAndPassword(auth, email, password);
         navigate('/login');
       })
       .catch((error) => {
@@ -83,7 +88,8 @@ const SignUp = (props) => {
 
   return (
     <div className="h-screen overflow-hidden">
-      <Container className="h-full flex flex-col justify-center">
+      <Header />
+      <Container style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <div className="h-full flex justify-center">
           <div className="h-full max-w-[850px] flex-grow mx-24 px-24">
             <div className="h-full flex flex-col justify-center mx-24">

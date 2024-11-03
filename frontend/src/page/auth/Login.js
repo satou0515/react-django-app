@@ -1,15 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { Container } from "@mui/material";
+import React, { useContext, useEffect, useState } from "react";
 import { MdOutlineVisibility } from "react-icons/md";
 import { MdOutlineVisibilityOff } from "react-icons/md";
 
 import { auth } from '../../firebase';
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { AuthContext } from "../../context/AuthContext";
+import Header from "../../component/common/header";
+import Container from "../../component/dashboard/Container";
 
 const Login = (props) => {
   const [password, setPassword] = useState();
   const [email, setEmail] = useState();
   const [showPassword, setShowPassword] = useState();
+
+  const { login } = useContext(AuthContext);
 
   useEffect(() => {
     console.log("Login Page");
@@ -32,7 +36,8 @@ const Login = (props) => {
     e.preventDefault();
     signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
-      props.user = userCredential.user;
+      console.log(userCredential);
+      login(email, password);
     })
     .catch((error) => {
       console.log(error.message);
@@ -41,7 +46,8 @@ const Login = (props) => {
 
   return (
     <div className="h-screen overflow-hidden">
-      <Container className="h-full flex flex-col justify-center">
+      <Header />
+      <Container style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <div className="h-full flex justify-center">
           <div className="h-full max-w-[850px] flex-grow mx-24 px-24">
             <div className="h-full flex flex-col justify-center mx-24">
@@ -62,7 +68,7 @@ const Login = (props) => {
                     className="w-full p-2 mt-1 border-2 border-gray-500 rounded-lg foucus:outline-none foucus:border-blue-300"
                   />
                 </div>
-                <div className="mt-2">
+                <div className="mt-2" style={{ width: "100%", position: "relative" }}>
                   <label className="block font-midium text-gray-700">
                     パスワード<span className="pl-4 text-red-500">必須</span>
                   </label>
@@ -81,7 +87,7 @@ const Login = (props) => {
                     style={{
                       position: "absolute",
                       right: "10px",
-                      top: "50%",
+                      top: "70%",
                       transform: "translateY(-50%)",
                       background: "none",
                       border: "none",
@@ -89,9 +95,9 @@ const Login = (props) => {
                     }}
                   >
                     {showPassword ? (
-                      <MdOutlineVisibility />
+                      <MdOutlineVisibility size={20} />
                     ) : (
-                      <MdOutlineVisibilityOff />
+                      <MdOutlineVisibilityOff size={20} />
                     )}
                   </button>
                 </div>
