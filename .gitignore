@@ -12,7 +12,7 @@
 # production
 */build
 
-*/*firebase-secret.json
+*/firebase-secret.json
 */db.sqlite3
 
 # misc
