@@ -1,7 +1,7 @@
 import { Navigate  } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { useContext, useState } from 'react';
-import { Box, Container, Fade, Modal, Typography } from '@mui/material';
+import { Box, Container, Fade, Modal } from '@mui/material';
 import AllPost from '../../component/dashboard/AllPost';
 import PostDialog from './PostDialog';
 
