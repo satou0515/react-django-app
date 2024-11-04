@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
@@ -13,33 +12,15 @@ import ForgetPassword from "./page/auth/ForgetPassword";
 import SignUp from "./page/auth/SignUp";
 import initializeApp from "./init";
 import DashboardRouter from "./page/dashboard/DashboardRouter";
-=======
-import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { UserProvider } from "./context/UserContext";
-import Login from './page/auth/Login';
-import './App.css';
-import ForgetPassword from './page/auth/ForgetPassword';
-import Register from './page/auth/Register';
-import initializeApp from './init';
->>>>>>> 4605fe1d0dc1c68949145321d8d87a9e629faa9b
 
 initializeApp();
 
 function App() {
-<<<<<<< HEAD
   const [notification, setNotification] = useState("");
   const [email, setEmail] = useState("");
 
   useEffect(() => {
     console.log("App component mounted");
-=======
-  const [notification, setNotification] = useState('');
-  const [email, setEmail] = useState('');
-
-  useEffect(() => {
-    console.log('App component mounted');
->>>>>>> 4605fe1d0dc1c68949145321d8d87a9e629faa9b
   }, []);
 
   return (
