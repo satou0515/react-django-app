@@ -48,6 +48,7 @@ const SignUp = (props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem("token");
 
     const emailInput = document.getElementById("email");
     // バリデーションチェック
@@ -56,34 +57,40 @@ const SignUp = (props) => {
       return;
     }
 
-    // FormDataオブジェクトを作成して画像ファイルと他のデータを追加
-    const formData = new FormData();
-    formData.append("icon_image", avatar);
-    formData.append("account_name", name);
-    formData.append("email", email);
-    formData.append("password", password);
-    formData.append("birth_date", birthDate);
-    formData.append("gender", gender);
-    for (let pair of formData.entries()) {
-      console.log(pair[0] + ': ' + pair[1]);
-    }
+    createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+      console.log('User ID:', user.uid);
 
-    const token = localStorage.getItem("token");
-    axios
-      .post(`${apiUrl}/api/authentication/my_auth/`, formData, {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+      // FormDataオブジェクトを作成して画像ファイルと他のデータを追加
+      const formData = new FormData();
+      formData.append("firebase_uid", user.uid);
+      formData.append("icon_image", avatar);
+      formData.append("account_name", name);
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("birth_date", birthDate);
+      formData.append("gender", gender);
+      for (let pair of formData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
+      }
+  
+      axios
+        .post(`${apiUrl}/api/authentication/my_auth/`, formData, {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+          navigate('/login');
+        })
+        .catch((error) => {
+          console.log("Error: ", error.response.data);
+        });
       })
-      .then((response) => {
-        console.log(response.data);
-        createUserWithEmailAndPassword(auth, email, password);
-        navigate('/login');
-      })
-      .catch((error) => {
-        console.log("Error: ", error.response.data);
-      });
+
   };
 
   return (

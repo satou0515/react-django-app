@@ -1,15 +1,19 @@
 import { Navigate  } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
-import { useContext, useState } from 'react';
 import { Box, Container, Fade, Modal } from '@mui/material';
 import AllPost from '../../component/dashboard/AllPost';
 import PostDialog from './PostDialog';
+import { setCookie } from '../../services/cookieService';
+import { useContext, useEffect, useState } from 'react';
 
 const Home = () => {
   const { user } = useContext(AuthContext);
 
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+    setCookie('csrftoken', user.uid, 1); // クッキーの設定
+  }, []);
 
   const handleClickOpen = () => {
     setOpen(true);

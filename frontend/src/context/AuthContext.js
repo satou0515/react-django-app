@@ -30,6 +30,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     signOut(auth).then(() => {
       navigate('/login');
+      localStorage.removeItem('csrftoken');
     }).catch((error) => {
       navigate('/home');
     });

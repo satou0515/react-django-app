@@ -38,6 +38,7 @@ const Login = (props) => {
     .then((userCredential) => {
       console.log(userCredential);
       login(email, password);
+
     })
     .catch((error) => {
       console.log(error.message);

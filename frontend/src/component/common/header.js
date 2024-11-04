@@ -17,7 +17,7 @@ const Header = () => {
 
   const GuestHeader = () => {
     return (
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem', paddingLeft: '2.5rem', paddingRight: '2.5rem' }}>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem', paddingLeft: '2.5rem', paddingRight: '2.5rem' }}>
         <div>
           <Link to='/login' style={{color: 'black', fontWeight: 'bold'}}>Demo App</Link>
         </div>
@@ -27,7 +27,7 @@ const Header = () => {
 
   const UserHeader = () => {
     return (
-      <header style={{ position: 'fixed', display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '0.5rem', paddingLeft: '2.5rem', paddingRight: '2.5rem', backgroundColor: '#fff' }}>
+      <header style={{ position: 'fixed', display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '1.188rem', paddingLeft: '2.5rem', paddingRight: '2.5rem', backgroundColor: '#fff' }}>
         <Link to='/login' style={{color: 'black', fontWeight: 'bold'}}>Demo App</Link>
         <div>
           <button

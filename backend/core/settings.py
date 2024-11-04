@@ -33,8 +33,8 @@ DEBUG = env('DEBUG')
 ALLOWED_HOSTS = ['*']
 
 CORS_ALLOWED_ORIGINS = [
-  'http://127.0.0.1:3000',  # フロントエンド
-  'http://127.0.0.1:8000',  # バックエンド
+  'http://frontend:3000',  # フロントエンド
+  'http://web:8000',  # バックエンド
 ]
 
 # Application definition
@@ -56,6 +56,9 @@ LOCAL_APPS = [
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 CORS_ALLOW_ALL_ORIGINS = True
+CSRF_TRUSTED_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://192.168.2.107:3000', 'http://frontend:3000']
+CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_AGE = 1209600
 
 MIDDLEWARE = [
   'corsheaders.middleware.CorsMiddleware',

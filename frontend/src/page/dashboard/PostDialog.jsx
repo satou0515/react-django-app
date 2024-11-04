@@ -1,15 +1,59 @@
 import { Box, TextField } from '@mui/material';
-import React, { useState } from 'react'
+import axios from 'axios';
+import React, { useContext, useState } from 'react'
+import { AuthContext } from '../../context/AuthContext';
+import { getCookie } from '../../services/cookieService';
 
-const PostDialog = ({ editFlag, handleClose }) => {
-  const [postContent, setPostContent] = useState("");
+const PostDialog = ({ handleClose }) => {
+  const apiUrl = process.env.REACT_APP_API_URL;
+
+  const [postContent, setPostContent] = useState('');
+  const [validContent, setValidContent] = useState(false);
+
+  const { user } = useContext(AuthContext); // user情報の取得
+
+  const handleChange = (e) => {
+    const value = e.target.value;
+    setPostContent(value);
+    if(value.length <= 140) {
+      setValidContent(false);
+    }else {
+      setValidContent(true);
+    }
+  };
 
   const handlePostSubmit = (e) => {
     e.preventDefault();
-    // ここで投稿処理を行う（APIへの送信など）
+    const token = localStorage.getItem("token");
+    const cookie = getCookie('csrftoken');
+    console.log("cookie: ", cookie);
+    const data = {};
+    
+    if(validContent) {
+      console.log('140文字を超えての投稿はできません。');
+      return;
+    }
+    if(postContent) {
+      data['firebase_uid'] = user.uid;
+      data['content'] = postContent;
+      console.log('uid: ', user.uid);
+      console.log('data: ', data);
+
+      axios.post(`${apiUrl}/api/post/users-post/`, data, {
+        headers: {
+          'X-CSRFToken': cookie, // CSRFトークンをヘッダーに追加
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }).then((response) => {
+        handleClose(); // 投稿後にダイアログを閉じる
+        setPostContent(""); // ダイアログを閉じたときに入力内容をリセット
+        console.log(response.data.status);
+      }).catch((error) => {
+        console.log('Error: ', error);
+      })
+    }
     console.log("投稿内容:", postContent);
-    handleClose(); // 投稿後にダイアログを閉じる
-    setPostContent(""); // ダイアログを閉じたときに入力内容をリセット
   };
 
   return (
@@ -25,7 +69,7 @@ const PostDialog = ({ editFlag, handleClose }) => {
           fullWidth
           variant="outlined"
           value={postContent}
-          onChange={(e) => setPostContent(e.target.value)}
+          onChange={handleChange}
           inputProps={{ maxLength: 140 }} // 140文字制限
         />
       </div>
