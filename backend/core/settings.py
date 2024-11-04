@@ -32,11 +32,6 @@ DEBUG = env('DEBUG')
 # 本番環境では具体的なホストを指定
 ALLOWED_HOSTS = ['*']
 
-CORS_ALLOWED_ORIGINS = [
-  'http://frontend:3000',  # フロントエンド
-  'http://web:8000',  # バックエンド
-]
-
 # Application definition
 DJANGO_APPS = [
   'django.contrib.admin',
@@ -55,10 +50,20 @@ LOCAL_APPS = [
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
+# cors
+CORS_ALLOWED_ORIGINS = [
+  'http://frontend:3000',  # フロントエンド
+  'http://web:8000',  # バックエンド
+]
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
+# csrf
 CSRF_TRUSTED_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://192.168.2.107:3000', 'http://frontend:3000']
-CSRF_COOKIE_SECURE = True
-# SESSION_COOKIE_AGE = 1209600
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = None
+SESSION_COOKIE_HTTPONLY = True
 
 MIDDLEWARE = [
   'corsheaders.middleware.CorsMiddleware',

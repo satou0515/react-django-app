@@ -39,6 +39,8 @@ const PostDialog = ({ handleClose }) => {
       console.log('uid: ', user.uid);
       console.log('data: ', data);
 
+      axios.defaults.xsrfCookieName = 'csrftoken' // ←ココと
+      axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
       axios.post(`${apiUrl}/api/post/users-post/`, data, {
         headers: {
           'X-CSRFToken': cookie, // CSRFトークンをヘッダーに追加
