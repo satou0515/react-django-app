@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     signOut(auth).then(() => {
       navigate('/login');
-      localStorage.removeItem('csrftoken');
+      document.cookie = 'csrftoken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     }).catch((error) => {
       navigate('/home');
     });

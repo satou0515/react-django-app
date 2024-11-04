@@ -22,11 +22,14 @@ const PostDialog = ({ handleClose }) => {
     }
   };
 
-  const handlePostSubmit = (e) => {
+  const handlePostSubmit = async(e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
+    // const cookie = document.cookie; //fetchCsrfToken();
     const cookie = getCookie('csrftoken');
-    console.log("cookie: ", cookie);
+    console.log(">>> ", document.cookie);
+    console.log(">>> ", cookie);
+
     const data = {};
     
     if(validContent) {
@@ -36,24 +39,46 @@ const PostDialog = ({ handleClose }) => {
     if(postContent) {
       data['firebase_uid'] = user.uid;
       data['content'] = postContent;
-      console.log('uid: ', user.uid);
-      console.log('data: ', data);
 
-      axios.defaults.xsrfCookieName = 'csrftoken' // ←ココと
-      axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
-      axios.post(`${apiUrl}/api/post/users-post/`, data, {
+      // axios.defaults.xsrfCookieName = 'csrftoken'
+      // axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
+      // axios.post(`${apiUrl}/api/post/users-post/`, data, {
+      //   headers: {
+      //     // 'X-CSRFToken': cookie, // CSRFトークンをヘッダーに追加
+      //     Accept: "application/json",
+      //     Authorization: `Bearer ${token}`,
+      //   },
+      //   withCredentials: true   // クロスドメインでCookieを送信
+      // }).then((response) => {
+      //   handleClose(); // 投稿後にダイアログを閉じる
+      //   setPostContent(""); // ダイアログを閉じたときに入力内容をリセット
+      //   console.log(response.data.status);
+      // }).catch((error) => {
+      //   console.log('Error: ', error);
+      // })
+      fetch(`${apiUrl}/api/post/users-post/`, {
+        method: 'POST',
         headers: {
-          'X-CSRFToken': cookie, // CSRFトークンをヘッダーに追加
-          Accept: "application/json",
-          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'X-CSRFToken': cookie,
         },
-      }).then((response) => {
-        handleClose(); // 投稿後にダイアログを閉じる
-        setPostContent(""); // ダイアログを閉じたときに入力内容をリセット
-        console.log(response.data.status);
-      }).catch((error) => {
-        console.log('Error: ', error);
+        credentials: 'include',
+        body: JSON.stringify(data),
       })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        handleClose();
+        setPostContent("");
+        console.log(data.status);
+      })
+      .catch((error) => {
+        console.log('Error: ', error);
+      });
     }
     console.log("投稿内容:", postContent);
   };

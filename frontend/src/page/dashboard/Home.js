@@ -7,13 +7,31 @@ import { setCookie } from '../../services/cookieService';
 import { useContext, useEffect, useState } from 'react';
 
 const Home = () => {
+  const apiUrl = process.env.REACT_APP_API_URL;
   const { user } = useContext(AuthContext);
 
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    setCookie('csrftoken', user.uid, 1); // クッキーの設定
-  }, []);
+    const fetchCsrfToken = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/api/post/get-csrf-token/`, {
+          method: 'GET',
+          credentials: 'include', // Cookieを含める
+        });
+        
+        const data = await response.json();
+        // CSRFトークンをCookieに設定
+        // document.cookie = `csrftoken=${data.csrfToken}; path=/; SameSite=None; Secure`;  // httpsで設定
+        document.cookie = `csrftoken=${data.csrfToken}; path=/; SameSite=None; Secure`;
+        setCookie('csrftoken', data.csrfToken, 1); // 有効期限1日
+      }catch(error) {
+        console.error('CSRF token fetch error: ', error);
+      }
+    };
+
+    fetchCsrfToken();
+  }, [apiUrl]);
 
   const handleClickOpen = () => {
     setOpen(true);

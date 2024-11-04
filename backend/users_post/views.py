@@ -11,8 +11,9 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 
 from users_post.firestore import FirebaseClient
-
 from users_post.serializers import UsersPostSerializer
+from django.middleware.csrf import get_token
+from django.http import JsonResponse
 
 class UsersPostViewSet(viewsets.ViewSet):
   firebase_client = FirebaseClient()
@@ -112,3 +113,7 @@ class UserSignUpView(APIView):
       )
       return Response({'message': '登録しました。'}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+def get_csrf_token(request):
+    csrf_token = get_token(request)
+    return JsonResponse({'csrfToken': csrf_token})
