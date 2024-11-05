@@ -19,6 +19,7 @@ const SignUp = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [validPassword, setValidPassword] = useState(true);
+  const [validEmail, setValidEmail] = useState(true);
   const [showPassword, setShowPassword] = useState();
   const [birthDate, setBirthDate] = useState("");
   const [gender, setGender] = useState("");
@@ -35,6 +36,18 @@ const SignUp = (props) => {
     setShowPassword((prevShowPassword) => !prevShowPassword);
   };
 
+  const handleEmailChange = (e) => {
+    const newEmail = e.target.value;
+    setEmail(newEmail);
+    setValidEmail(validateEmail(newEmail));
+  };
+  const validateEmail = (email) => {
+    const pattern =
+      /^[\w.-]+@[\w.-]+\.(jp|com)$/;
+      console.log('>>> ', pattern.test(email));
+    return pattern.test(email);
+  };
+
   const handlePasswordChange = (e) => {
     const newPassword = e.target.value;
     setPassword(newPassword);
@@ -43,6 +56,7 @@ const SignUp = (props) => {
   const validatePassword = (pass) => {
     const pattern =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}$/;
+    console.log('>>> ', pattern.test(pass));
     return pattern.test(pass);
   };
 
@@ -50,47 +64,41 @@ const SignUp = (props) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
 
-    const emailInput = document.getElementById("email");
-    // バリデーションチェック
-    if (!emailInput.checkVisibility()) {
-      console.log("Error: ", emailInput.validationMessage);
-      return;
-    }
-
-    createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      const user = userCredential.user;
-      console.log('User ID:', user.uid);
-
-      // FormDataオブジェクトを作成して画像ファイルと他のデータを追加
-      const formData = new FormData();
-      formData.append("firebase_uid", user.uid);
-      formData.append("icon_image", avatar);
-      formData.append("account_name", name);
-      formData.append("email", email);
-      formData.append("password", password);
-      formData.append("birth_date", birthDate);
-      formData.append("gender", gender);
-      for (let pair of formData.entries()) {
-        console.log(pair[0] + ': ' + pair[1]);
-      }
+    if(avatar && name && email && password) {
+      createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log('User ID:', user.uid);
   
-      axios
-        .post(`${apiUrl}/api/authentication/my_auth/`, formData, {
-          headers: {
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+        // FormDataオブジェクトを作成して画像ファイルと他のデータを追加
+        const formData = new FormData();
+        formData.append("firebase_uid", user.uid);
+        formData.append("icon_image", avatar);
+        formData.append("account_name", name);
+        formData.append("email", email);
+        formData.append("password", password);
+        formData.append("birth_date", birthDate);
+        formData.append("gender", gender);
+        for (let pair of formData.entries()) {
+          console.log(pair[0] + ': ' + pair[1]);
+        }
+    
+        axios
+          .post(`${apiUrl}/api/authentication/my_auth/`, formData, {
+            headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          .then((response) => {
+            console.log(response.data);
+            navigate('/login');
+          })
+          .catch((error) => {
+            console.log("Error: ", error.response.data);
+          });
         })
-        .then((response) => {
-          console.log(response.data);
-          navigate('/login');
-        })
-        .catch((error) => {
-          console.log("Error: ", error.response.data);
-        });
-      })
-
+    }
   };
 
   return (
@@ -154,7 +162,7 @@ const SignUp = (props) => {
                     type="email"
                     placeholder="sample@abc.com"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={handleEmailChange}
                     className="w-full p-2 mt-1 border-2 border-gray-500 rounded-lg foucus:outline-none foucus:border-blue-300"
                     required
                   />
@@ -241,7 +249,12 @@ const SignUp = (props) => {
                 <div>
                   <button
                     type="submit"
-                    className="w-full mt-4 py-3 font-bold text-sm text-white bg-blue-500 rounded-full hover:bg-blue-700"
+                    className={`w-full mt-4 py-3 font-bold text-sm rounded-full ${
+                      ((!validPassword || password.length<=0) || (!validEmail || email.length<=0) || name.length<=0)
+                        ? 'bg-gray-400'
+                        : 'bg-blue-500 hover:bg-blue-700 text-white'
+                    }`}
+                    disabled={(!validPassword || password.length<=0) && (!validEmail || email.length<=0) && name.length<=0}
                   >
                     アカウントを作成
                   </button>

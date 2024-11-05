@@ -1,16 +1,20 @@
 import { Box, TextField } from '@mui/material';
 import axios from 'axios';
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../context/AuthContext';
 import { getCookie } from '../../services/cookieService';
 
+
 const PostDialog = ({ handleClose }) => {
   const apiUrl = process.env.REACT_APP_API_URL;
-
   const [postContent, setPostContent] = useState('');
   const [validContent, setValidContent] = useState(false);
-
+  const [commonCookie, setCommonCookie] = useState('');
   const { user } = useContext(AuthContext); // user情報の取得
+
+  useEffect(() => {
+    setCommonCookie(getCookie('csrftoken'));
+  }, []);
 
   const handleChange = (e) => {
     const value = e.target.value;
@@ -22,63 +26,68 @@ const PostDialog = ({ handleClose }) => {
     }
   };
 
-  const handlePostSubmit = async(e) => {
-    e.preventDefault();
-    const token = localStorage.getItem("token");
-    // const cookie = document.cookie; //fetchCsrfToken();
-    const cookie = getCookie('csrftoken');
-    console.log(">>> ", document.cookie);
-    console.log(">>> ", cookie);
-
-    const data = {};
-    
-    if(validContent) {
-      console.log('140文字を超えての投稿はできません。');
+  // CSRFトークンを取得してcommonCookieにセットする関数
+  const fetchCsrfToken = async() => {
+    try {
+      const response = await axios.get(`${apiUrl}/api/post/get-csrf-token/`, {
+        withCredentials: true, // Cookieを含める
+      });
+      const csrfToken = response.data.csrfToken;
+      setCommonCookie(csrfToken);
+      console.log('fetch: ', csrfToken);
+      return csrfToken;
+    } catch (error) {
+      console.error('CSRF token fetch error: ', error);
       return;
     }
-    if(postContent) {
-      data['firebase_uid'] = user.uid;
-      data['content'] = postContent;
+  };
 
-      // axios.defaults.xsrfCookieName = 'csrftoken'
-      // axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
-      // axios.post(`${apiUrl}/api/post/users-post/`, data, {
-      //   headers: {
-      //     // 'X-CSRFToken': cookie, // CSRFトークンをヘッダーに追加
-      //     Accept: "application/json",
-      //     Authorization: `Bearer ${token}`,
-      //   },
-      //   withCredentials: true   // クロスドメインでCookieを送信
-      // }).then((response) => {
-      //   handleClose(); // 投稿後にダイアログを閉じる
-      //   setPostContent(""); // ダイアログを閉じたときに入力内容をリセット
-      //   console.log(response.data.status);
-      // }).catch((error) => {
-      //   console.log('Error: ', error);
-      // })
-      fetch(`${apiUrl}/api/post/users-post/`, {
-        method: 'POST',
+  // リクエストをリトライ
+  const apiRequest = async(config) => {
+    try {
+      return await axios(config);
+    }catch(error) {
+      if (error.response && error.response.status === 403) {
+        await fetchCsrfToken(); // CSRFトークンを再取得
+        config.headers['X-CSRFToken'] = commonCookie; // 新しいトークンでリトライ
+        return axios(config);
+      }
+      console.log("apiRequest Error: ", error);
+      throw error; // その他のエラーはそのまま投げる
+    }
+  };
+
+  const handlePostSubmit = async (e) => {
+    e.preventDefault();
+  
+    // CSRFトークンの取得
+    const csrfToken = getCookie('csrftoken'); // トークンを取得
+    const token = localStorage.getItem("token");
+  
+    const data = {
+      firebase_uid: user.uid,
+      content: postContent,
+    };
+  
+    // リクエストを送信
+    try {
+      const response = await apiRequest({
+        method: 'post',
+        url: `${apiUrl}/api/post/users-post/`,
+        data,
         headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': cookie,
+          'X-CSRFToken': csrfToken, // 最新のCSRFトークンを使用
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`, // ここでトークンを取得
         },
-        credentials: 'include',
-        body: JSON.stringify(data),
-      })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        handleClose();
-        setPostContent("");
-        console.log(data.status);
-      })
-      .catch((error) => {
-        console.log('Error: ', error);
+        withCredentials: true,
       });
+  
+      handleClose(); // 投稿後にダイアログを閉じる
+      setPostContent(""); // ダイアログを閉じたときに入力内容をリセット
+      console.log(response.data.status);
+    } catch (error) {
+      console.error('Error: ', error);
     }
     console.log("投稿内容:", postContent);
   };
@@ -97,14 +106,13 @@ const PostDialog = ({ handleClose }) => {
           variant="outlined"
           value={postContent}
           onChange={handleChange}
-          inputProps={{ maxLength: 140 }} // 140文字制限
         />
       </div>
       <div style={ButtonsStyle()}>
         <button onClick={handleClose} style={CancelButtonStyle()}>
           キャンセル
         </button>
-        <button onClick={handlePostSubmit} style={PostButtonStyle()}>
+        <button onClick={handlePostSubmit} style={PostButtonStyle()} disabled={validContent}>
           ポストする
         </button>
       </div>

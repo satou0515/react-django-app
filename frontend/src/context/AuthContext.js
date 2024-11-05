@@ -15,8 +15,11 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     // サインイン/サインアウトの監視
     const unsubscribed = auth.onAuthStateChanged((user) => {
-      setUser(user);
-      setLoading(false);
+      const isAuthenticated = sessionStorage.getItem('isAuthenticated');
+      if(!isAuthenticated) {
+        setUser(user);
+        setLoading(false);
+      }
     });
     return () => {
       unsubscribed();
@@ -24,6 +27,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (email, password) => {
+    sessionStorage.setItem('isAuthenticated', 'true');
     navigate("/home");
   }
 
@@ -31,6 +35,7 @@ export const AuthProvider = ({ children }) => {
     signOut(auth).then(() => {
       navigate('/login');
       document.cookie = 'csrftoken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      localStorage.removeItem('isAuthenticated');
     }).catch((error) => {
       navigate('/home');
     });

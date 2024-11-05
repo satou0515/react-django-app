@@ -14,6 +14,7 @@ import os
 import environ
 from pathlib import Path
 from decouple import config
+from core.middleware import CustomCsrfViewMiddleware
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,8 +30,15 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
+# リダイレクト先
+LOGIN_REDIRECT_URL = "home"
+
 # 本番環境では具体的なホストを指定
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+  # '*'
+  'localhost',
+  '127.0.0.1',
+]
 
 # Application definition
 DJANGO_APPS = [
@@ -50,21 +58,29 @@ LOCAL_APPS = [
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 # cors
-CORS_ALLOWED_ORIGINS = [
-  'http://frontend:3000',  # フロントエンド
-  'http://web:8000',  # バックエンド
-]
+# CORS_ALLOWED_ORIGINS = [
+#   'http://localhost:3000',  # フロントエンド
+#   'http://127.0.0.1:3000',
+# ]
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
+SESSION_COOKIE_AGE = 3600 # 1時間
+
 # csrf
 CSRF_COOKIE_NAME = 'csrftoken'
-CSRF_TRUSTED_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
-CORS_ALLOW_CREDENTIALS = True
-CSRF_COOKIE_SECURE = False  # ローカル開発中はFalseに設定
+CSRF_TRUSTED_ORIGINS = [
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'http://localhost:8000',
+  'http://127.0.0.1:8000'
+]
+CSRF_COOKIE_SECURE = False  # 本番環境ではTruenに設定
 CSRF_COOKIE_HTTPONLY = False
-SESSION_COOKIE_SECURE = None
+SESSION_COOKIE_SECURE = None  # 本番環境ではTruenに設定
 SESSION_COOKIE_HTTPONLY = True
 
 MIDDLEWARE = [
@@ -72,6 +88,7 @@ MIDDLEWARE = [
   'django.middleware.security.SecurityMiddleware',
   'django.contrib.sessions.middleware.SessionMiddleware',
   'django.middleware.common.CommonMiddleware',
+  'core.middleware.CustomCsrfViewMiddleware',  # カスタムミドルウェア
   'django.middleware.csrf.CsrfViewMiddleware',
   'django.contrib.auth.middleware.AuthenticationMiddleware',
   'django.contrib.messages.middleware.MessageMiddleware',

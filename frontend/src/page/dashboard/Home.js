@@ -3,8 +3,9 @@ import { AuthContext } from '../../context/AuthContext';
 import { Box, Container, Fade, Modal } from '@mui/material';
 import AllPost from '../../component/dashboard/AllPost';
 import PostDialog from './PostDialog';
-import { setCookie } from '../../services/cookieService';
+import { getCookie, setCookie } from '../../services/cookieService';
 import { useContext, useEffect, useState } from 'react';
+import axios from 'axios';
 
 const Home = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -13,25 +14,29 @@ const Home = () => {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const fetchCsrfToken = async () => {
-      try {
-        const response = await fetch(`${apiUrl}/api/post/get-csrf-token/`, {
-          method: 'GET',
-          credentials: 'include', // Cookieを含める
-        });
-        
-        const data = await response.json();
+    const fetchCsrfToken = () => {
+      const token = localStorage.getItem("token");
+
+      axios.get(`${apiUrl}/api/post/get-csrf-token/`, {
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true, // Cookieを含める
+      }).then((response) => {
+        const data = response.data.csrfToken;
         // CSRFトークンをCookieに設定
-        // document.cookie = `csrftoken=${data.csrfToken}; path=/; SameSite=None; Secure`;  // httpsで設定
-        document.cookie = `csrftoken=${data.csrfToken}; path=/; SameSite=None; Secure`;
-        setCookie('csrftoken', data.csrfToken, 1); // 有効期限1日
-      }catch(error) {
-        console.error('CSRF token fetch error: ', error);
-      }
-    };
+        // document.cookie = `csrftoken=${data}; path=/; SameSite=None; Secure`;  // httpsで設定
+        document.cookie = `csrftoken=${data}; path=/; SameSite=None;`;
+        setCookie('csrftoken', data, 1); // 有効期限1日
+        console.log('取得とセット: ', data);
+      }).catch((error) => {
+        console.log('Error: ', error);
+      });
+    }
 
     fetchCsrfToken();
-  }, [apiUrl]);
+  }, [apiUrl, getCookie('csrftoken')]);
 
   const handleClickOpen = () => {
     setOpen(true);
