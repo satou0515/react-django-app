@@ -1,24 +1,57 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import Login from "./page/auth/Login";
+import "./App.css";
+import ForgetPassword from "./page/auth/ForgetPassword";
+import SignUp from "./page/auth/SignUp";
+import initializeApp from "./init";
+import DashboardRouter from "./page/dashboard/DashboardRouter";
+
+initializeApp();
 
 function App() {
+  const [notification, setNotification] = useState("");
+  const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    console.log("App component mounted");
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<Navigate to="/login" />} />
+          <Route
+            path="/login"
+            element={
+              <Login
+                content={notification}
+                setEmail={setEmail}
+                setNotification={setNotification}
+              />
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <SignUp
+                content={notification}
+                setNotification={setNotification}
+              />
+            }
+          />
+          <Route path="/forget-pass" element={<ForgetPassword />} />
+          <Route path="/home" element={<DashboardRouter />} />
+        </Routes>
+      </AuthProvider>
+    </Router>
   );
 }
 
