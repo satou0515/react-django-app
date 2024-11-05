@@ -1,41 +1,17 @@
 services:
-  db:
-    image: postgres
-    environment:
-      - POSTGRES_DB=my_app
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=pass
-    ports:
-      - "5432:5432"
-    command: -p 5432
-    networks:
-      - my_networks
   web:
     build: ./backend
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/code
-    environment:
-      - DB_NAME=my_app
-      - DB_USER=user
-      - DB_PASSWORD=pass
-      - DB_HOST=db
-    depends_on:
-      - db
     command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
-    networks:
-      - my_networks
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
-      # target: main
     ports:
       - "3000:3000"
-    networks:
-      - my_networks
-
-networks:
-  my_networks:
-    driver: bridge
+    volumes:
+      - ./frontend:/app
+    depends_on:
+      - web
