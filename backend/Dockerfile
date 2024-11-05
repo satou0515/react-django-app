@@ -24,7 +24,7 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # プロジェクトファイルのコピー
 COPY . /code/
-COPY .env .env
+COPY .env .
 
 RUN pip install firebase-admin
 RUN pip install django-cors-headers
